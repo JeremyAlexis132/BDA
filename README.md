@@ -207,7 +207,7 @@ SELECT * FROM AUDIT_EMPLEADOS;
 
 ```bash
 # Seguridad: Crear usuarios Oracle (como SYSTEM)
-docker exec -it oracle-proyecto sqlplus SYSTEM/Admin1234@//localhost:1521/XEPDB1 @/container-entrypoint-initdb.d/../scripts/03_seguridad_usuarios.sql
+docker exec -i oracle-proyecto sqlplus SYSTEM/Admin1234@//localhost:1521/XEPDB1 < db/scripts/03_seguridad_usuarios.sql
 
 # Carga masiva: 50,000 registros (como proyecto_usr)
 docker exec -i oracle-proyecto sqlplus proyecto_usr/Proyecto1234@//localhost:1521/XEPDB1 < db/scripts/04_carga_masiva.sql
