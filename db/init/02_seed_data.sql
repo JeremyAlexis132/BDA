@@ -4,6 +4,10 @@
 -- Proyecto Final - Base de Datos Avanzadas (UNAM)
 -- ============================================================
 
+-- Asegurar que las inserciones caigan en el PDB y esquema correctos.
+ALTER SESSION SET CONTAINER = XEPDB1;
+ALTER SESSION SET CURRENT_SCHEMA = PROYECTO_USR;
+
 -- ============================
 -- DEPARTAMENTOS
 -- ============================

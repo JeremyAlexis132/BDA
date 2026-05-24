@@ -187,9 +187,6 @@ docker exec -it oracle-proyecto sqlplus SYSTEM/Admin1234@//localhost:1521/XEPDB1
 ### Verificar las tablas creadas
 
 ```sql
--- Dentro de SQL*Plus:
-SELECT table_name FROM user_tables ORDER BY table_name;
-
 -- Ver empleados
 SELECT * FROM EMPLEADOS;
 
@@ -202,6 +199,9 @@ SELECT * FROM VW_EMPLEADOS_ACTIVOS;
 -- Ver auditoría
 SELECT * FROM AUDIT_EMPLEADOS;
 ```
+
+> Si entras como `SYSTEM`, esas consultas sin prefijo no apuntan al esquema de la app.
+> Para revisar los datos como administrador usa `SELECT * FROM PROYECTO_USR.EMPLEADOS;` o conecta directamente como `proyecto_usr`.
 
 ### Ejecutar scripts avanzados manualmente
 

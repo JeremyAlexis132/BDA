@@ -4,6 +4,11 @@
 -- Proyecto Final - Base de Datos Avanzadas (UNAM)
 -- ============================================================
 
+-- Crear todos los objetos dentro del esquema de la aplicación.
+-- El contenedor inicializa la base como SYS, pero la app se conecta como PROYECTO_USR.
+ALTER SESSION SET CONTAINER = XEPDB1;
+ALTER SESSION SET CURRENT_SCHEMA = PROYECTO_USR;
+
 -- ============================
 -- TABLAS BASE
 -- ============================
@@ -120,5 +125,4 @@ END;
 
 CREATE INDEX IDX_EMP_FECHA_INGRESO ON EMPLEADOS(FECHA_INGRESO);
 CREATE INDEX IDX_EMP_DEP_SALARIO   ON EMPLEADOS(ID_DEPARTAMENTO, SALARIO);
-CREATE INDEX IDX_EMP_EMAIL         ON EMPLEADOS(EMAIL);
 CREATE INDEX IDX_EMP_ACTIVO        ON EMPLEADOS(ACTIVO);
