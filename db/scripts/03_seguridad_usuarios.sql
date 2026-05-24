@@ -1,0 +1,63 @@
+-- ============================================================
+-- 03_seguridad_usuarios.sql
+-- Creación de usuarios Oracle, roles y permisos (RBAC/DAC/MAC)
+-- EJECUTAR COMO SYSTEM (administrador de la BD)
+-- Proyecto Final - Base de Datos Avanzadas (UNAM)
+-- ============================================================
+
+-- ============================
+-- NOTA: Este script se ejecuta manualmente como SYSTEM
+-- Conectarse a: sqlplus SYSTEM/Admin1234@//localhost:1521/XEPDB1
+-- ============================
+
+-- Usuarios de Oracle para demostración de seguridad multinivel
+CREATE USER USR_ADMIN IDENTIFIED BY "Admin#2026";
+CREATE USER USR_ANALISTA IDENTIFIED BY "Analista#2026";
+CREATE USER USR_AUDITOR IDENTIFIED BY "Auditor#2026";
+
+-- Cuotas
+ALTER USER USR_ADMIN    QUOTA UNLIMITED ON USERS;
+ALTER USER USR_ANALISTA QUOTA 0 ON USERS;
+ALTER USER USR_AUDITOR  QUOTA 0 ON USERS;
+
+-- Sesiones
+GRANT CREATE SESSION TO USR_ADMIN, USR_ANALISTA, USR_AUDITOR;
+
+-- Roles personalizados
+CREATE ROLE ROL_ADMIN_APP;
+CREATE ROLE ROL_ANALISTA_APP;
+CREATE ROLE ROL_AUDITOR_APP;
+
+-- Permisos para ROL_ADMIN_APP (acceso completo)
+GRANT CREATE TABLE, CREATE VIEW, CREATE PROCEDURE, CREATE TRIGGER TO ROL_ADMIN_APP;
+GRANT SELECT, INSERT, UPDATE, DELETE ON PROYECTO_USR.EMPLEADOS TO ROL_ADMIN_APP;
+GRANT SELECT, INSERT, UPDATE, DELETE ON PROYECTO_USR.DEPARTAMENTOS TO ROL_ADMIN_APP;
+GRANT SELECT, INSERT, UPDATE, DELETE ON PROYECTO_USR.EMPLEADO_ROL TO ROL_ADMIN_APP;
+GRANT SELECT, INSERT, UPDATE, DELETE ON PROYECTO_USR.ROLES TO ROL_ADMIN_APP;
+
+-- Permisos para ROL_ANALISTA_APP (solo lectura)
+GRANT SELECT ON PROYECTO_USR.VW_EMPLEADOS_ACTIVOS TO ROL_ANALISTA_APP;
+GRANT SELECT ON PROYECTO_USR.EMPLEADOS TO ROL_ANALISTA_APP;
+GRANT SELECT ON PROYECTO_USR.DEPARTAMENTOS TO ROL_ANALISTA_APP;
+
+-- Permisos para ROL_AUDITOR_APP (auditoría)
+GRANT SELECT ON PROYECTO_USR.AUDIT_EMPLEADOS TO ROL_AUDITOR_APP;
+GRANT SELECT ON PROYECTO_USR.EMPLEADOS TO ROL_AUDITOR_APP;
+
+-- Asignar roles a usuarios
+GRANT ROL_ADMIN_APP    TO USR_ADMIN;
+GRANT ROL_ANALISTA_APP TO USR_ANALISTA;
+GRANT ROL_AUDITOR_APP  TO USR_AUDITOR;
+
+-- ============================
+-- VERIFICACIÓN DE ACCESO
+-- ============================
+-- Prueba 1: Conectar como analista (debe fallar DELETE)
+-- CONNECT USR_ANALISTA/"Analista#2026"@//localhost:1521/XEPDB1
+-- DELETE FROM PROYECTO_USR.EMPLEADOS WHERE ID_EMPLEADO = 1;
+-- Resultado esperado: ORA-01031: insufficient privileges
+
+-- Prueba 2: Conectar como auditor (solo lectura de auditoría)
+-- CONNECT USR_AUDITOR/"Auditor#2026"@//localhost:1521/XEPDB1
+-- SELECT COUNT(*) FROM PROYECTO_USR.AUDIT_EMPLEADOS;
+-- Resultado esperado: consulta exitosa

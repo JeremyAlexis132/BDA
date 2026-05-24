@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Empleados — BDA UNAM</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- ============================
+         PANTALLA DE LOGIN
+         ============================ -->
+    <div id="login-screen" class="login-container">
+        <div class="login-card">
+            <div class="unam-badge">🏛️ UNAM — Facultad de Ingeniería</div>
+            <h1>Gestión de Empleados</h1>
+            <p class="subtitle">Base de Datos Avanzadas — Proyecto Final</p>
+
+            <div id="login-alert" class="alert alert-danger"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-user">👤 Usuario</label>
+                    <input type="text" id="login-user" class="form-control"
+                           placeholder="Ingrese su usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-pass">🔒 Contraseña</label>
+                    <input type="password" id="login-pass" class="form-control"
+                           placeholder="Ingrese su contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; font-size:1rem;">
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <p style="text-align:center; margin-top:20px; font-size:0.8rem; color:#999;">
+                Usuarios de prueba: <strong>admin</strong> / <strong>analista</strong> / <strong>auditor</strong><br>
+                Contraseña: <strong>admin123</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- ============================
+         APLICACIÓN PRINCIPAL
+         ============================ -->
+    <div id="app" class="app-container">
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <h2>📊 Sistema de Gestión de Empleados</h2>
+            <div class="nav-right">
+                <span class="user-info">
+                    👤 <span id="nav-username"></span>
+                    <span id="nav-rol" class="user-rol"></span>
+                </span>
+                <button class="btn btn-logout btn-sm" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Alerta global -->
+            <div id="global-alert" class="alert"></div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('dashboard')">📈 Dashboard</button>
+                <button class="tab-btn" onclick="switchTab('empleados')">👥 Empleados</button>
+                <button class="tab-btn" onclick="switchTab('departamentos')">🏢 Departamentos</button>
+                <button class="tab-btn" onclick="switchTab('auditoria')">📋 Auditoría</button>
+            </div>
+
+            <!-- ============================
+                 TAB: DASHBOARD
+                 ============================ -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-activos">-</div>
+                        <div class="stat-label">Empleados Activos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-inactivos">-</div>
+                        <div class="stat-label">Empleados Inactivos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-departamentos">-</div>
+                        <div class="stat-label">Departamentos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-salario">-</div>
+                        <div class="stat-label">Salario Promedio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-auditorias">-</div>
+                        <div class="stat-label">Registros Auditoría</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Top 5 Departamentos por Empleados</h3>
+                    </div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Departamento</th>
+                                    <th>Total Empleados</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-dept-body">
+                                <tr><td colspan="2" class="loading">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================
+                 TAB: EMPLEADOS
+                 ============================ -->
+            <div id="tab-empleados" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Lista de Empleados</h3>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="text" id="search-empleados" class="form-control"
+                                   placeholder="Buscar..." style="width:200px;"
+                                   oninput="filterEmpleados()">
+                            <button class="btn btn-success" onclick="openEmpleadoModal()"
+                                    id="btn-add-emp" style="display:none;">
+                                ➕ Agregar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Departamento</th>
+                                    <th>Salario</th>
+                                    <th>Fecha Ingreso</th>
+                                    <th>Estado</th>
+                                    <th id="th-acciones" style="display:none;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="empleados-body">
+                                <tr><td colspan="8" class="loading">
+                                    <div class="spinner"></div><br>Cargando empleados...
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================
+                 TAB: DEPARTAMENTOS
+                 ============================ -->
+            <div id="tab-departamentos" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Departamentos</h3>
+                        <button class="btn btn-success" onclick="openDeptModal()"
+                                id="btn-add-dept" style="display:none;">
+                            ➕ Agregar
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Ubicación</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="departamentos-body">
+                                <tr><td colspan="4" class="loading">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================
+                 TAB: AUDITORÍA
+                 ============================ -->
+            <div id="tab-auditoria" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Registro de Auditoría</h3>
+                    </div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Empleado</th>
+                                    <th>Acción</th>
+                                    <th>Usuario BD</th>
+                                    <th>Fecha</th>
+                                    <th>Salario Ant.</th>
+                                    <th>Salario Nvo.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditoria-body">
+                                <tr><td colspan="7" class="loading">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================
+         MODAL: EMPLEADO
+         ============================ -->
+    <div id="modal-empleado" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-emp-title">Agregar Empleado</h3>
+                <button class="modal-close" onclick="closeModal('modal-empleado')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-emp-alert" class="alert alert-danger"></div>
+                <form id="form-empleado">
+                    <input type="hidden" id="emp-id">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="form-group">
+                            <label>Nombre *</label>
+                            <input type="text" id="emp-nombre" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Apellido *</label>
+                            <input type="text" id="emp-apellido" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="emp-email" class="form-control" required>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="form-group">
+                            <label>Fecha de Ingreso *</label>
+                            <input type="date" id="emp-fecha" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Salario *</label>
+                            <input type="number" id="emp-salario" class="form-control"
+                                   min="1" step="0.01" required>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="form-group">
+                            <label>Departamento *</label>
+                            <select id="emp-departamento" class="form-control" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nivel de Seguridad</label>
+                            <select id="emp-nivel" class="form-control">
+                                <option value="PUBLICO">Público</option>
+                                <option value="INTERNO" selected>Interno</option>
+                                <option value="RESTRINGIDO">Restringido</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="emp-activo" class="form-control">
+                            <option value="S">Activo</option>
+                            <option value="N">Inactivo</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('modal-empleado')"
+                        style="background:#e0e0e0;">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveEmpleado()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================
+         MODAL: DEPARTAMENTO
+         ============================ -->
+    <div id="modal-departamento" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Agregar Departamento</h3>
+                <button class="modal-close" onclick="closeModal('modal-departamento')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-dept-alert" class="alert alert-danger"></div>
+                <div class="form-group">
+                    <label>Nombre del Departamento *</label>
+                    <input type="text" id="dept-nombre" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Ubicación</label>
+                    <input type="text" id="dept-ubicacion" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('modal-departamento')"
+                        style="background:#e0e0e0;">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveDepartamento()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
